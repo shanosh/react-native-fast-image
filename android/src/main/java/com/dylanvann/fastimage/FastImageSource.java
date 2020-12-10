@@ -107,6 +107,26 @@ public class FastImageSource extends ImageSource {
     }
 
     public GlideUrl getGlideUrl() {
-        return new GlideUrl(getUri().toString(), getHeaders());
+        return new GlideUrlCustomCacheKey(getUri().toString(), getHeaders());
+    }
+
+    public class GlideUrlCustomCacheKey extends GlideUrl {
+
+        public GlideUrlCustomCacheKey(String url, Headers headers) {
+            super(url, headers);
+        }
+
+        /**
+         * Make sure the cache key does not contain any query parameters
+         */
+        @Override
+        public String getCacheKey() {
+            String url = toStringUrl();
+            if (url.contains("?")) {
+                return url.substring(0, url.lastIndexOf("?"));
+            } else {
+                return url;
+            }
+        }
     }
 }
